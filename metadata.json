@@ -1,0 +1,7 @@
+{
+    "shell-version": ["3.2"],
+    "uuid": "message-notifier@shell-extensions.barisione.org",
+    "name": "Message Notifier",
+    "description": "Shows if you have unread IM messages",
+    "url": "http://blog.barisione.org/"
+}
