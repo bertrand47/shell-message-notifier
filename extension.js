@@ -38,7 +38,17 @@ MessageLabel.prototype = {
     },
 
     updateCount: function() {
-        this.countLabel.set_text('0');
+        let count = 0;
+
+        let items = Main.messageTray._summaryItems;
+        for (let i = 0; i < items.length; i++) {
+            let s = items[i].source;
+            if (s._counterBin.visible && s._counterLabel.get_text() != '0') {
+                count++;
+            }
+        }
+
+        this.countLabel.set_text(count.toString());
     }
 };
 
