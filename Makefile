@@ -9,16 +9,21 @@ STATUS=$$(gsettings get $(SCHEMA) $(KEY) | grep "$(UUID)" > /dev/null 2>&1; if [
 all:
 
 install:
-	mkdir -p $(EXT_DIR)/$(UUID)
-	for f in "$(FILES)"; do \
+	@mkdir -p $(EXT_DIR)/$(UUID)
+	@for f in "$(FILES)"; do \
 	    cp -f $$f $(EXT_DIR)/$(UUID)/$$f; \
 	done
+	@if [ $(STATUS) = "enabled" ]; then \
+	    echo "To reload the shell (and the extension) press ALT-F2 and type 'r'."; \
+	else \
+	    echo "To enable the extension type 'make enable'."; \
+	fi
 
 uninstall: disable-internal
-	for f in "$(FILES)"; do \
+	@for f in "$(FILES)"; do \
 	    rm $(EXT_DIR)/$(UUID)/$$f; \
 	done
-	rmdir $(EXT_DIR)/$(UUID)
+	@rmdir $(EXT_DIR)/$(UUID)
 
 enable: disable-internal
 	@if [ ! -d "$(EXT_DIR)/$(UUID)" ]; then \
@@ -31,6 +36,7 @@ enable: disable-internal
 	new_val="$$other_extensions, $$full_id]"; \
 	new_val=`echo "$$new_val" | sed -e 's/\[, /[/'` ; \
 	gsettings set $(SCHEMA) $(KEY) "$$new_val"
+	@echo "To reload the shell (and the extension) press ALT-F2 and type 'r'."; \
 
 disable: disable-internal
 	@if [ $(STATUS) = "enabled" ]; then \
