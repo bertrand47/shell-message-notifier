@@ -16,11 +16,38 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+const Main = imports.ui.main;
+const St = imports.gi.St;
+
+let label;
+
+function MessageLabel() {
+    this._init();
+}
+
+MessageLabel.prototype = {
+    _init: function() {
+        this.countLabel = new St.Label();
+
+        this.actor = new St.Button({name: 'messageButton'});
+        this.actor.set_child(this.countLabel);
+
+        this._updateText();
+    },
+
+    _updateText: function() {
+        this.countLabel.set_text('0');
+    }
+};
+
 function init() {
+    label = new MessageLabel();
 }
 
 function enable() {
+    Main.panel._rightBox.insert_actor(label.actor, 0);
 }
 
 function disable() {
+    Main.panel._rightBox.remove_actor(label);
 }
