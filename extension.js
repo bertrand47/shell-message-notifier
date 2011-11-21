@@ -48,6 +48,7 @@ MessageLabel.prototype = {
             }
         }
 
+        this.countLabel.visible = count > 0;
         this.countLabel.set_text(count.toString());
     }
 };
