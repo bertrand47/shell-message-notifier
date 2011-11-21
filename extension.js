@@ -76,5 +76,5 @@ function enable() {
 function disable() {
     MessageTray.Source.prototype._setCount = originalSetCount;
 
-    Main.panel._rightBox.remove_actor(label);
+    Main.panel._rightBox.remove_actor(label.actor);
 }
