@@ -31,7 +31,8 @@ MessageLabel.prototype = {
     _init: function() {
         this.countLabel = new St.Label({style_class: 'message-label'});
 
-        this.actor = new St.Button({name: 'messageButton'});
+        this.actor = new St.Button({name: 'messageButton',
+                                    style_class: 'message-button'});
         this.actor.set_child(this.countLabel);
 
         this.updateCount();
