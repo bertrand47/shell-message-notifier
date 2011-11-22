@@ -1,6 +1,6 @@
 EXT_DIR="$(HOME)/.local/share/gnome-shell/extensions"
 UUID=`cat metadata.json  | grep uuid | sed -e 's/^\s*"uuid":\s*"\([^"]*\)",$$/\1/'`
-FILES="README extension.js stylesheet.css metadata.json"
+FILES="README extension.js stylesheet.css metadata.json notification-icon.jpg"
 
 SCHEMA="org.gnome.shell"
 KEY="enabled-extensions"

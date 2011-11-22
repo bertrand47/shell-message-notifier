@@ -19,7 +19,10 @@
 const Lang = imports.lang;
 const Main = imports.ui.main;
 const MessageTray = imports.ui.messageTray;
+const Tweener = imports.ui.tweener;
 const St = imports.gi.St;
+const Clutter = imports.gi.Clutter;
+const GLib = imports.gi.GLib;
 
 let label;
 
@@ -36,6 +39,51 @@ MessageLabel.prototype = {
         this.actor.set_child(this.countLabel);
 
         this.updateCount();
+
+        this.oldCount = 0;
+        this.actor.connect('button-press-event',
+            Lang.bind(this, this._showSanta));
+    },
+
+    /* Implements the suggestion at the end of
+     * https://bugzilla.gnome.org/show_bug.cgi?id=641723#c81 */
+    _showSanta: function() {
+        if (this.santa)
+            return;
+
+        /* Only in December. */
+        if (GLib.DateTime.new_now_local().get_month() != 12)
+            return;
+
+        /* Not always... */
+        if (GLib.random_int_range(0, 100) != 0)
+            return;
+
+        this.santa = Clutter.Texture.new_from_file(
+            GLib.get_home_dir() +
+            '/.local/share/gnome-shell/extensions' +
+            '/message-notifier@shell-extensions.barisione.org' +
+            '/notification-icon.jpg');
+        Main.uiGroup.add_actor(this.santa);
+
+        this.santa.opacity = 255;
+
+        let monitor = Main.layoutManager.primaryMonitor;
+        this.santa.set_position(
+            monitor.x + Math.floor(monitor.width / 2 - this.santa.width / 2),
+            monitor.y + Math.floor(monitor.height / 2 - this.santa.height / 2));
+
+        Tweener.addTween(this.santa,
+            { opacity: 0,
+              time: 2,
+              transition: 'easeOutQuad',
+              onComplete: Lang.bind(this, this._hideSanta)
+            });
+    },
+
+    _hideSanta: function() {
+        Main.uiGroup.remove_actor(this.santa);
+        this.santa = null;
     },
 
     updateCount: function() {
@@ -51,6 +99,14 @@ MessageLabel.prototype = {
 
         this.countLabel.visible = count > 0;
         this.countLabel.set_text(count.toString());
+
+        /* Only notify if we have at least one message, and the count hasn't
+         * reduced. */
+        if (count > 0 && count >= this.oldCount) {
+            this._showSanta();
+        }
+
+        this.oldCount = count;
     }
 };
 
