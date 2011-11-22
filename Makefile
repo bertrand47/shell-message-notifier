@@ -1,5 +1,5 @@
 EXT_DIR="$(HOME)/.local/share/gnome-shell/extensions"
-UUID=`cat metadata.json  | grep uuid | sed -e 's/^\s*"uuid":\s*"\([^"]*\)",$$/\1/'`
+UUID=`perl -nle 'if (m{"uuid": "([^"]+)"}) { print $$1 }' metadata.json`
 FILES="README extension.js stylesheet.css metadata.json notification-icon.jpg"
 
 SCHEMA="org.gnome.shell"
