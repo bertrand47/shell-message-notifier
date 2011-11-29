@@ -92,8 +92,17 @@ MessageLabel.prototype = {
         let items = Main.messageTray._summaryItems;
         for (let i = 0; i < items.length; i++) {
             let s = items[i].source;
-            if (s._counterBin.visible && s._counterLabel.get_text() != '0') {
-                count++;
+            if ((s.title == "mailnag") && !s._counterBin.visible) {
+            	colonMatch = s.notifications[0]._contentArea.toString().match(/:\n/g);
+            	if (colonMatch != null) {
+            		// summary mode notification -> mailcount = count of ':'
+            		count += colonMatch.length
+            	} else {
+            		// single mode notification
+            		count++;
+            	}
+            } else if (s._counterBin.visible && s._counterLabel.get_text() != '0') {
+                count += Number(s._counterLabel.get_text()); //count++;
             }
         }
 
