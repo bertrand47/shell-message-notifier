@@ -106,7 +106,7 @@ MessageLabel.prototype = {
             }
         }
 
-        this.countLabel.visible = count > 0;
+        this.actor.visible = count > 0;
         this.countLabel.set_text(count.toString());
 
         /* Only notify if we have at least one message, and the count hasn't
