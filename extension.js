@@ -92,11 +92,21 @@ MessageLabel.prototype = {
         let items = Main.messageTray._summaryItems;
         for (let i = 0; i < items.length; i++) {
             let s = items[i].source;
-            if ((s.title == "mailnag") && !s._counterBin.visible) {
-            	let colonMatch = s.notifications[0]._contentArea.toString().match(/:\n/g);
+            if ((s.title == 'mailnag') && !s._counterBin.visible) {
+            	let content = s.notifications[0]._contentArea.toString();
+            	let colonMatch = content.match(/:\n/g);
+            	
             	if (colonMatch != null) {
             		// summary mode notification -> mailcount = count of ':'
             		count += colonMatch.length;
+            		
+            		// check for further suppressed mails 
+            		// (parse string "(and n more)")
+            		let idx = content.indexOf('\n(');
+            		if (idx > -1) {
+            			let more = Number(content.substr(idx).split(' ')[1]);
+            			count += more;
+            		}
             	} else {
             		// single mode notification
             		count++;
