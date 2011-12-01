@@ -93,24 +93,7 @@ MessageLabel.prototype = {
         for (let i = 0; i < items.length; i++) {
             let s = items[i].source;
             if ((s.title == 'mailnag') && !s._counterBin.visible) {
-            	let content = s.notifications[0]._contentArea.toString();
-            	let colonMatch = content.match(/:\n/g);
-            	
-            	if (colonMatch != null) {
-            		// summary mode notification -> mailcount = count of ':'
-            		count += colonMatch.length;
-            		
-            		// check for further suppressed mails 
-            		// (parse string "(and n more)")
-            		let idx = content.indexOf('\n(');
-            		if (idx > -1) {
-            			let more = Number(content.substr(idx).split(' ')[1]);
-            			count += more;
-            		}
-            	} else {
-            		// single mode notification
-            		count++;
-            	}
+                count += this._get_mailnag_count(s);
             } else if (s._counterBin.visible && s._counterLabel.get_text() != '0') {
                 count += Number(s._counterLabel.get_text());
             }
@@ -126,6 +109,39 @@ MessageLabel.prototype = {
         }
 
         this.oldCount = count;
+    },
+    
+    _get_mailnag_count: function(source) {
+        let count = 0;
+        let content = source.notifications[0]._contentArea.toString();
+        let colonMatch = content.match(/:\n/g);
+            	
+        if (colonMatch != null) {
+            // summary mode notification -> mailcount = count of ':'
+            count += colonMatch.length;
+            
+            // check for further suppressed mails 
+            // (parse string "(and n more)")
+            let idx = content.indexOf('\n(');
+            
+            if (idx > -1) {
+                let parts = content.substr(idx).split(' ');
+                let i = 0;
+                while (i < parts.length) {
+                    let more = Number(parts[i]);
+                    if (more != NaN) {
+                        count += more;
+                        break;
+                    }
+                    i++;
+                }
+            }
+        } else {
+            // single mode notification
+            count++;
+        }
+        
+        return count;
     }
 };
 
