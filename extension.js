@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011 Marco Barisione <marco@barisione.org>
+ * Copyright (C) 2011 Patrick Ulbrich <zulu99@gmx.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +24,7 @@ const Tweener = imports.ui.tweener;
 const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
 const GLib = imports.gi.GLib;
+const Shell = imports.gi.Shell;
 
 let label;
 
@@ -32,6 +34,8 @@ function MessageLabel() {
 
 MessageLabel.prototype = {
     _init: function() {
+        this.mailnag_title = this._get_mailnag_messagetray_title();
+        
         this.countLabel = new St.Label({style_class: 'message-label'});
 
         this.actor = new St.Button({name: 'messageButton',
@@ -88,11 +92,12 @@ MessageLabel.prototype = {
 
     updateCount: function() {
         let count = 0;
-
         let items = Main.messageTray._summaryItems;
+        
         for (let i = 0; i < items.length; i++) {
             let s = items[i].source;
-            if ((s.title == 'mailnag') && !s._counterBin.visible) {
+            if ( ((this.mailnag_title != null) && (s.title == this.mailnag_title)) && 
+                !s._counterBin.visible ) {
                 count += this._get_mailnag_count(s);
             } else if (s._counterBin.visible && s._counterLabel.get_text() != '0') {
                 count += Number(s._counterLabel.get_text());
@@ -142,6 +147,30 @@ MessageLabel.prototype = {
         }
         
         return count;
+    },
+    
+    _get_mailnag_messagetray_title: function() {
+        let mailnag_cfg = GLib.get_home_dir() + '/.config/mailnag/mailnag.cfg';
+        let title = null;
+        let config = null;
+        
+        try {
+            config = Shell.get_file_contents_utf8_sync(mailnag_cfg);
+        } catch (ex) {}
+        
+        if (config != null) {
+            let lines = config.split('\n');
+            let i = 0;
+            while (i < lines.length) {
+                if (lines[i].indexOf('messagetray_label') == 0) {
+                    title = lines[i].split('=')[1].trim();
+                    break;
+                }
+                i++;
+            }
+        }
+        
+        return title;
     }
 };
 
