@@ -134,7 +134,7 @@ MessageLabel.prototype = {
                 let i = 0;
                 while (i < parts.length) {
                     let more = Number(parts[i]);
-                    if (more != NaN) {
+                    if (!isNaN(more)) {
                         count += more;
                         break;
                     }
