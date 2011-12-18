@@ -119,28 +119,20 @@ MessageLabel.prototype = {
     _get_mailnag_count: function(source) {
         let count = 0;
         let content = source.notifications[0]._contentArea.toString();
-        let colonMatch = content.match(/:\n/g);
-            	
-        if (colonMatch != null) {
-            // summary mode notification -> mailcount = count of ':'
-            count += colonMatch.length;
-            
-            // check for further suppressed mails 
-            // (parse string "(and n more)")
-            let idx = content.indexOf('\n(');
-            
-            if (idx > -1) {
-                let parts = content.substr(idx).split(' ');
-                let i = 0;
-                while (i < parts.length) {
-                    let more = Number(parts[i]);
-                    if (!isNaN(more)) {
-                        count += more;
-                        break;
-                    }
-                    i++;
-                }
-            }
+        
+        if (content.indexOf('\n') > 0) {
+            // summary mode notification -> parse count from title
+            let title = source.notifications[0].title;
+            let parts = title.split(' ');
+		    let i = 0;
+		    while (i < parts.length) {
+		        let n = Number(parts[i]);
+		        if (!isNaN(n)) {
+		            count += n;
+		            break;
+		        }
+		        i++;
+		    }
         } else {
             // single mode notification
             count++;
