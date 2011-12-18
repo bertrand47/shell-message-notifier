@@ -132,7 +132,7 @@ MessageLabel.prototype = {
                     break;
                 }
                 i++;
-		    }
+            }
         } else {
             // single mode notification
             count++;
