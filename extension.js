@@ -124,14 +124,14 @@ MessageLabel.prototype = {
             // summary mode notification -> parse count from title
             let title = source.notifications[0].title;
             let parts = title.split(' ');
-		    let i = 0;
-		    while (i < parts.length) {
-		        let n = Number(parts[i]);
-		        if (!isNaN(n)) {
-		            count += n;
-		            break;
-		        }
-		        i++;
+            let i = 0;
+            while (i < parts.length) {
+                let n = Number(parts[i]);
+                if (!isNaN(n)) {
+                    count += n;
+                    break;
+                }
+                i++;
 		    }
         } else {
             // single mode notification
