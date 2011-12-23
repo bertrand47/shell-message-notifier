@@ -117,25 +117,28 @@ MessageLabel.prototype = {
     },
     
     _get_mailnag_count: function(source) {
-        let count = 0;
+        /* count is 1 in the following cases:
+         * a) single notification mode with just one mail.
+         * b) summary notification mode with just one mail,
+         *    i.e. title is in singular form and doesn't contain a number 
+         *    (e.g. "You have a new mail.").
+         */
+        let count = 1;
         let content = source.notifications[0]._contentArea.toString();
         
+        // summary mode notification -> try to parse count from title
         if (content.indexOf('\n') > 0) {
-            // summary mode notification -> parse count from title
             let title = source.notifications[0].title;
             let parts = title.split(' ');
             let i = 0;
             while (i < parts.length) {
                 let n = Number(parts[i]);
                 if (!isNaN(n)) {
-                    count += n;
+                    count = n;
                     break;
                 }
                 i++;
             }
-        } else {
-            // single mode notification
-            count++;
         }
         
         return count;
