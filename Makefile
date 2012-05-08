@@ -1,6 +1,6 @@
 EXT_DIR="$(HOME)/.local/share/gnome-shell/extensions"
 UUID=`perl -nle 'if (m{"uuid": "([^"]+)"}) { print $$1 }' metadata.json`
-FILES="README extension.js stylesheet.css metadata.json notification-icon.jpg"
+FILES="README extension.js stylesheet.css metadata.json"
 
 SCHEMA="org.gnome.shell"
 KEY="enabled-extensions"
