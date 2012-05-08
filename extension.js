@@ -22,6 +22,7 @@ const Main = imports.ui.main;
 const MessageTray = imports.ui.messageTray;
 const Tweener = imports.ui.tweener;
 const St = imports.gi.St;
+const PanelMenu = imports.ui.panelMenu;
 const Clutter = imports.gi.Clutter;
 const GLib = imports.gi.GLib;
 const Shell = imports.gi.Shell;
@@ -38,9 +39,9 @@ MessageLabel.prototype = {
         
         this.countLabel = new St.Label({style_class: 'message-label'});
 
-        this.actor = new St.Button({name: 'messageButton',
+        this.actor = new PanelMenu.Button({name: 'messageButton',
                                     style_class: 'message-button'});
-        this.actor.set_child(this.countLabel);
+        this.actor.actor.add_actor(this.countLabel);
 
         this.updateCount();
 
@@ -104,7 +105,7 @@ MessageLabel.prototype = {
             }
         }
 
-        this.actor.visible = count > 0;
+        this.actor.actor.visible = count > 0;
         this.countLabel.set_text(count.toString());
 
         /* Only notify if we have at least one message, and the count hasn't
@@ -178,20 +179,21 @@ function customSetCount(count, visible) {
 
 let originalSetCount;
 
-function init() {
-    originalSetCount = MessageTray.Source.prototype._setCount;
-
-    label = new MessageLabel();
+function init() {    
 }
 
 function enable() {
+    originalSetCount = MessageTray.Source.prototype._setCount;
     MessageTray.Source.prototype._setCount = customSetCount;
-
-    Main.panel._rightBox.insert_actor(label.actor, 0);
+    
+    label = new MessageLabel();
+    Main.panel.addToStatusArea('message-notifier', label.actor, 0);
 }
 
 function disable() {
     MessageTray.Source.prototype._setCount = originalSetCount;
-
-    Main.panel._rightBox.remove_actor(label.actor);
+    originalSetCount = null;
+     
+    label.actor.destroy();
+    label = null;
 }
